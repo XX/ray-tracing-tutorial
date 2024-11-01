@@ -33,8 +33,8 @@ impl Camera {
     pub fn with_viewport_size(
         mut self,
         viewport_height: f64,
-        image_width: i32,
-        image_height: i32,
+        image_width: usize,
+        image_height: usize,
     ) -> Self {
         // Calculate the actual aspect ratio.
         let aspect_ration = image_width as f64 / image_height as f64;
@@ -56,7 +56,7 @@ impl Camera {
         self
     }
 
-    pub fn pixel_center(&self, i: i32, j: i32) -> Point3 {
+    pub fn pixel_center(&self, i: usize, j: usize) -> Point3 {
         (self.upper_left_pixel.to_vec()
             + self.pixel_delta_u * i as f64
             + self.pixel_delta_v * j as f64)

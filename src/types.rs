@@ -59,3 +59,10 @@ impl Ray {
         (self.origin.to_vec() + t * self.direction).into()
     }
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct Hit {
+    pub t: f64,
+    pub point: Point3,
+    pub normal: Vector3,
+}

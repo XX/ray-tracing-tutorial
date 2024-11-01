@@ -1,4 +1,4 @@
-use crate::types::{Point3, Ray};
+use crate::types::{Hit, Point3, Ray};
 
 pub struct Sphere {
     center: Point3,
@@ -10,7 +10,7 @@ impl Sphere {
         Self { center, radius }
     }
 
-    pub fn hit(&self, ray: &Ray) -> Option<f64> {
+    pub fn hit(&self, ray: &Ray) -> Option<Hit> {
         let oc = self.center.to_vec() - ray.origin.to_vec();
         let a = ray.direction.dot(&ray.direction);
         let b = -2.0 * ray.direction.dot(&oc);
@@ -25,7 +25,12 @@ impl Sphere {
             if t < 0.0 {
                 t = (-b + sqrt) / (2.0 * a);
             }
-            Some(t)
+            let point = ray.at(t);
+            Some(Hit {
+                t,
+                point,
+                normal: (point.to_vec() - self.center.to_vec()) / self.radius,
+            })
         }
     }
 }
