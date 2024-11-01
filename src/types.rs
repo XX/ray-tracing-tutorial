@@ -58,10 +58,4 @@ impl Ray {
     pub fn at(&self, t: f64) -> Point3 {
         (self.origin.to_vec() + t * self.direction).into()
     }
-
-    pub fn color(&self) -> Color {
-        let a = 0.5 * (self.direction.y + 1.0);
-        ((1.0 - a) * Color::new(1.0, 1.0, 1.0).to_vec() + a * Color::new(0.5, 0.7, 1.0).to_vec())
-            .into()
-    }
 }
