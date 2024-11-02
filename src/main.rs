@@ -1,12 +1,13 @@
 use std::io;
 
-use sphere::Sphere;
-
 use crate::camera::Camera;
+use crate::object::Hittable;
+use crate::sphere::Sphere;
 use crate::types::{Color, Point3, Ray, Vector3};
 use crate::utils::{Logger, Timer};
 
 mod camera;
+mod object;
 mod sphere;
 mod types;
 mod utils;
@@ -14,7 +15,7 @@ mod utils;
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
 fn color(ray: &Ray, sphere: &Sphere) -> Color {
-    if let Some(hit) = sphere.hit(ray) {
+    if let Some(hit) = sphere.hit(ray, 0.0..f64::INFINITY) {
         return (0.5 * Vector3::new(hit.normal.x + 1.0, hit.normal.y + 1.0, hit.normal.z + 1.0))
             .into();
     }
