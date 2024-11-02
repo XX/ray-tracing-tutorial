@@ -1,8 +1,8 @@
 use std::ops::Range;
 
 use crate::{
-    object::Hittable,
-    types::{Hit, Point3, Ray},
+    object::{Hit, Hittable},
+    types::{Point3, Ray},
 };
 
 pub struct Sphere {
@@ -34,11 +34,12 @@ impl Hittable for Sphere {
             for root in [(h - sqrt) / a, (h + sqrt) / a] {
                 if root >= t_range.start && root < t_range.end {
                     let point = ray.at(root);
-                    return Some(Hit {
-                        t: root,
+                    return Some(Hit::new(
+                        root,
                         point,
-                        normal: (point - self.center) / self.radius,
-                    });
+                        ray,
+                        (point - self.center) / self.radius,
+                    ));
                 }
             }
         }

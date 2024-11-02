@@ -24,7 +24,7 @@ impl<T: Write> Logger<T> {
     }
 
     pub fn progress_line(&mut self, n: impl Display) -> &mut Self {
-        write!(&mut self.out, "\rScanlines remaining: {n}  ").expect("Failed to write");
+        write!(&mut self.out, "\rScanlines remaining: {n}").expect("Failed to write");
         self
     }
 
