@@ -26,16 +26,6 @@ impl<T: Write> Logger<T> {
         self
     }
 
-    pub fn progress_line(&mut self, n: impl Display) -> &mut Self {
-        self.msg(format!("\rScanlines remaining: {n}"));
-        self
-    }
-
-    pub fn done(&mut self) -> &mut Self {
-        self.msg("\rDone.                    ");
-        self
-    }
-
     pub fn elapsed(&mut self, timer: &Timer) -> &mut Self {
         self.msg(format!(
             "elapsed {:.6} seconds.",

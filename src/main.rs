@@ -42,7 +42,7 @@ fn main() {
         image_height,
     );
 
-    log.msg("Render frame ");
+    log.msg("Render frame ").flush();
     let mut timer = Timer::start();
 
     for j in 0..image_height {
@@ -58,7 +58,7 @@ fn main() {
     timer.stop();
     log.elapsed(&timer).ln();
 
-    log.msg("Output image ");
+    log.msg("Output image ").flush();
     let mut timer = Timer::start();
 
     println!("P3\n{image_width} {image_height}\n255");
