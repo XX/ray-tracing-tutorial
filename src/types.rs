@@ -1,5 +1,3 @@
-use std::io;
-
 use derive_more::{Deref, DerefMut, From};
 
 pub type Vector3 = nalgebra::Vector3<f64>;
@@ -13,15 +11,15 @@ impl Color {
         Self(Vector3::new(r, g, b))
     }
 
-    pub fn write(&self, mut out: impl io::Write) {
+    pub fn to_byte(&self) -> [u8; 3] {
         let (r, g, b) = (self.x, self.y, self.z);
 
-        // Translate the [0,1] component values to the byte range [0,255].
-        let r_byte = (r * 255.999) as u8;
-        let g_byte = (g * 255.999) as u8;
-        let b_byte = (b * 255.999) as u8;
-
-        writeln!(out, "{r_byte} {g_byte} {b_byte}").expect("Failed to write color");
+        // Translate the 0.0..=1.0 component values to the byte range 0..=255.
+        [
+            (r * 255.999) as u8,
+            (g * 255.999) as u8,
+            (b * 255.999) as u8,
+        ]
     }
 
     pub fn to_vec(&self) -> Vector3 {
