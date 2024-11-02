@@ -13,17 +13,17 @@ impl Sphere {
     pub fn hit(&self, ray: &Ray) -> Option<Hit> {
         let oc = self.center.to_vec() - ray.origin.to_vec();
         let a = ray.direction.dot(&ray.direction);
-        let b = -2.0 * ray.direction.dot(&oc);
+        let h = ray.direction.dot(&oc);
         let c = oc.dot(&oc) - self.radius.powi(2);
-        let discriminant = b.powi(2) - 4.0 * a * c;
+        let discriminant = h.powi(2) - a * c;
 
         if discriminant < 0.0 {
             None
         } else {
             let sqrt = discriminant.sqrt();
-            let mut t = (-b - sqrt) / (2.0 * a);
+            let mut t = (h - sqrt) / a;
             if t < 0.0 {
-                t = (-b + sqrt) / (2.0 * a);
+                t = (h + sqrt) / a;
             }
             let point = ray.at(t);
             Some(Hit {
