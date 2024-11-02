@@ -1,9 +1,7 @@
 use std::ops::Range;
 
-use crate::{
-    object::{Hit, Hittable},
-    types::{Point3, Ray},
-};
+use crate::object::{Hit, Hittable};
+use crate::types::{Point3, Ray};
 
 pub struct Sphere {
     center: Point3,

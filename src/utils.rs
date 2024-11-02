@@ -1,8 +1,6 @@
-use std::{
-    fmt::Display,
-    io::Write,
-    time::{Duration, Instant},
-};
+use std::fmt::Display;
+use std::io::Write;
+use std::time::{Duration, Instant};
 
 pub struct Logger<T> {
     out: T,
