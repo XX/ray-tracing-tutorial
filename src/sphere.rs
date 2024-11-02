@@ -21,7 +21,7 @@ impl Sphere {
 
 impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
-        let oc = self.center.to_vec() - ray.origin.to_vec();
+        let oc = self.center - ray.origin;
         let a = ray.direction.norm_squared();
         let h = ray.direction.dot(&oc);
         let c = oc.norm_squared() - self.radius.powi(2);
@@ -37,7 +37,7 @@ impl Hittable for Sphere {
                     return Some(Hit {
                         t: root,
                         point,
-                        normal: (point.to_vec() - self.center.to_vec()) / self.radius,
+                        normal: (point - self.center) / self.radius,
                     });
                 }
             }

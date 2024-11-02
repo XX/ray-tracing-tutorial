@@ -57,10 +57,7 @@ impl Camera {
     }
 
     pub fn pixel_center(&self, i: usize, j: usize) -> Point3 {
-        (self.upper_left_pixel.to_vec()
-            + self.pixel_delta_u * i as f64
-            + self.pixel_delta_v * j as f64)
-            .into()
+        self.upper_left_pixel + self.pixel_delta_u * i as f64 + self.pixel_delta_v * j as f64
     }
 
     pub fn center(&self) -> Point3 {
@@ -68,10 +65,10 @@ impl Camera {
     }
 
     fn calc_upper_left_pixel_loc(&self) -> Point3 {
-        let viewport_upper_left = self.center.to_vec()
+        let viewport_upper_left = self.center
             - Vector3::new(0.0, 0.0, self.focal_length)
             - self.viewport_u / 2.0
             - self.viewport_v / 2.0;
-        (viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) / 2.0).into()
+        viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) / 2.0
     }
 }

@@ -3,19 +3,7 @@ use std::io;
 use derive_more::{Deref, DerefMut, From};
 
 pub type Vector3 = nalgebra::Vector3<f64>;
-
-#[derive(Copy, Clone, From, Deref, DerefMut, Debug, Default, PartialEq)]
-pub struct Point3(pub Vector3);
-
-impl Point3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self(Vector3::new(x, y, z))
-    }
-
-    pub fn to_vec(&self) -> Vector3 {
-        self.0
-    }
-}
+pub type Point3 = Vector3;
 
 #[derive(Copy, Clone, From, Deref, DerefMut, Debug, Default, PartialEq)]
 pub struct Color(pub Vector3);
@@ -56,7 +44,7 @@ impl Ray {
     }
 
     pub fn at(&self, t: f64) -> Point3 {
-        (self.origin.to_vec() + t * self.direction).into()
+        (self.origin + t * self.direction).into()
     }
 }
 

@@ -43,8 +43,7 @@ fn main() {
     let mut timer = Timer::start();
     for j in 0..image_height {
         for i in 0..image_width {
-            let pixel_center = camera.pixel_center(i, j);
-            let ray_direction = pixel_center.to_vec() - camera.center().to_vec();
+            let ray_direction = camera.pixel_center(i, j) - camera.center();
             let ray = Ray::new(camera.center(), ray_direction);
 
             let pixel_color = color(&ray, &sphere);
