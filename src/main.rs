@@ -15,7 +15,7 @@ mod utils;
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
 fn color(ray: &Ray, world: &[Box<dyn Hittable>]) -> Color {
-    if let Some(hit) = world.hit(ray, 0.0..f64::MAX) {
+    if let Some(hit) = world.hit(ray, 0.0..f64::INFINITY) {
         return (0.5 * Vector3::new(hit.normal.x + 1.0, hit.normal.y + 1.0, hit.normal.z + 1.0))
             .into();
     }
