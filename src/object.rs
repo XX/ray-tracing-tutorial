@@ -47,8 +47,16 @@ where
     T: Hittable,
 {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
-        self.iter()
-            .filter_map(|hittable| hittable.hit(ray, t_range.clone()))
-            .min_by(|hit_a, hit_b| hit_a.t.total_cmp(&hit_b.t))
+        let mut nearest_hit = None;
+        let mut closest_so_far = t_range.end;
+
+        for hittable in self {
+            if let Some(hit) = hittable.hit(ray, t_range.start..closest_so_far) {
+                closest_so_far = hit.t;
+                nearest_hit = Some(hit);
+            }
+        }
+
+        nearest_hit
     }
 }
