@@ -30,7 +30,7 @@ impl Hittable for Sphere {
 
             // Find the nearest root that lies in the acceptable range.
             for root in [(h - sqrt) / a, (h + sqrt) / a] {
-                if root >= t_range.start && root < t_range.end {
+                if t_range.contains(&root) {
                     let point = ray.at(root);
                     return Some(Hit::new(
                         root,
