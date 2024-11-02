@@ -1,10 +1,6 @@
-use std::ops::Range;
+use std::ops::{Deref, Range};
 
 use crate::types::{Point3, Ray, Vector3};
-
-pub trait Hittable {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit>;
-}
 
 #[derive(Copy, Clone, Debug)]
 pub struct Hit {
@@ -30,5 +26,29 @@ impl Hit {
             normal,
             front_face,
         }
+    }
+}
+
+pub trait Hittable {
+    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit>;
+}
+
+impl<T> Hittable for T
+where
+    T: Deref<Target = dyn Hittable>,
+{
+    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+        self.deref().hit(ray, t_range)
+    }
+}
+
+impl<T> Hittable for [T]
+where
+    T: Hittable,
+{
+    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+        self.iter()
+            .filter_map(|hittable| hittable.hit(ray, t_range.clone()))
+            .min_by(|hit_a, hit_b| hit_a.t.total_cmp(&hit_b.t))
     }
 }
