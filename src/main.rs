@@ -14,8 +14,8 @@ mod utils;
 
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
-fn color(ray: &Ray, sphere: &Sphere) -> Color {
-    if let Some(hit) = sphere.hit(ray, 0.0..f64::INFINITY) {
+fn color(ray: &Ray, world: &[Box<dyn Hittable>]) -> Color {
+    if let Some(hit) = world.hit(ray, 0.0..f64::MAX) {
         return (0.5 * Vector3::new(hit.normal.x + 1.0, hit.normal.y + 1.0, hit.normal.z + 1.0))
             .into();
     }
@@ -31,13 +31,16 @@ fn main() {
     let image_height = (image_width as f64 / ASPECT_RATIO) as usize;
     let mut frame = Vec::with_capacity(image_width * image_height);
 
+    let world: [Box<dyn Hittable>; 2] = [
+        Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)),
+        Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)),
+    ];
+
     let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), 1.0).with_viewport_size(
         2.0,
         image_width,
         image_height,
     );
-
-    let sphere = Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5);
 
     // Render frame
     let mut timer = Timer::start();
@@ -46,7 +49,7 @@ fn main() {
             let ray_direction = camera.pixel_center(i, j) - camera.center();
             let ray = Ray::new(camera.center(), ray_direction);
 
-            let pixel_color = color(&ray, &sphere);
+            let pixel_color = color(&ray, &world);
             frame.push(pixel_color);
         }
     }
