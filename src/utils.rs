@@ -21,23 +21,26 @@ impl<T: Write> Logger<T> {
         self
     }
 
+    pub fn msg(&mut self, msg: impl Display) -> &mut Self {
+        write!(&mut self.out, "{}", msg).expect("Failed to write");
+        self
+    }
+
     pub fn progress_line(&mut self, n: impl Display) -> &mut Self {
-        write!(&mut self.out, "\rScanlines remaining: {n}").expect("Failed to write");
+        self.msg(format!("\rScanlines remaining: {n}"));
         self
     }
 
     pub fn done(&mut self) -> &mut Self {
-        write!(&mut self.out, "\rDone.                    ").expect("Failed to write");
+        self.msg("\rDone.                    ");
         self
     }
 
     pub fn elapsed(&mut self, timer: &Timer) -> &mut Self {
-        write!(
-            &mut self.out,
-            "\rElapsed {:.6} seconds.",
+        self.msg(format!(
+            "elapsed {:.6} seconds.",
             timer.elapsed().as_secs_f64()
-        )
-        .expect("Failed to write");
+        ));
         self
     }
 }

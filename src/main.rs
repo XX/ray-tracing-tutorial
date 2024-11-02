@@ -42,8 +42,9 @@ fn main() {
         image_height,
     );
 
-    // Render frame
+    log.msg("Render frame ");
     let mut timer = Timer::start();
+
     for j in 0..image_height {
         for i in 0..image_width {
             let ray_direction = camera.pixel_center(i, j) - camera.center();
@@ -53,18 +54,20 @@ fn main() {
             frame.push(pixel_color);
         }
     }
+
     timer.stop();
     log.elapsed(&timer).ln();
 
-    // Output the image
+    log.msg("Output image ");
     let mut timer = Timer::start();
+
     println!("P3\n{image_width} {image_height}\n255");
     for j in 0..image_height {
-        log.progress_line(image_height - j).flush();
         for i in 0..image_width {
             frame[i + j * image_width].write(io::stdout());
         }
     }
+
     timer.stop();
-    log.done().ln().elapsed(&timer).ln();
+    log.elapsed(&timer).ln();
 }
