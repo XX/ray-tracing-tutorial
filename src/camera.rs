@@ -56,8 +56,11 @@ impl Camera {
         self
     }
 
-    pub fn pixel_center(&self, i: usize, j: usize) -> Point3 {
-        self.upper_left_pixel + self.pixel_delta_u * i as f64 + self.pixel_delta_v * j as f64
+    pub fn pixel_center(&self, i: usize, j: usize, offset: Option<Vector3>) -> Point3 {
+        let offset = offset.unwrap_or_default();
+        self.upper_left_pixel
+            + self.pixel_delta_u * (i as f64 + offset.x)
+            + self.pixel_delta_v * (j as f64 + offset.y)
     }
 
     pub fn center(&self) -> Point3 {

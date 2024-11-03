@@ -7,7 +7,10 @@ pub type Point3 = Vector3;
 pub struct Color(pub Vector3);
 
 impl Color {
-    pub fn new(r: f64, g: f64, b: f64) -> Self {
+    pub const BLACK: Color = Color::new(0.0, 0.0, 0.0);
+    pub const WHITE: Color = Color::new(1.0, 1.0, 1.0);
+
+    pub const fn new(r: f64, g: f64, b: f64) -> Self {
         Self(Vector3::new(r, g, b))
     }
 
@@ -15,11 +18,7 @@ impl Color {
         let (r, g, b) = (self.x, self.y, self.z);
 
         // Translate the 0.0..=1.0 component values to the byte range 0..=255.
-        [
-            (r * 255.999) as u8,
-            (g * 255.999) as u8,
-            (b * 255.999) as u8,
-        ]
+        [(r * 256.0) as u8, (g * 256.0) as u8, (b * 256.0) as u8]
     }
 
     pub fn to_vec(&self) -> Vector3 {
