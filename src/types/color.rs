@@ -1,5 +1,6 @@
 use derive_more::derive::{AddAssign, MulAssign};
 use derive_more::{Add, Deref, DerefMut, From, Mul, Sub};
+use nalgebra::ComplexField;
 
 use super::Vector3;
 
@@ -50,6 +51,14 @@ impl Color {
             self.y.clamp(0.0, 1.0),
             self.z.clamp(0.0, 1.0),
         )
+    }
+
+    pub fn to_gamma_2_color(&self) -> Self {
+        let r = self.0.x.try_sqrt().unwrap_or(0.0);
+        let g = self.0.y.try_sqrt().unwrap_or(0.0);
+        let b = self.0.z.try_sqrt().unwrap_or(0.0);
+
+        Self::new(r, g, b)
     }
 }
 

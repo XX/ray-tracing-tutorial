@@ -68,7 +68,11 @@ impl Renderer {
                     }
                 }
 
-                self.frame.push((pixel_color * pixel_samples_scale).clamp());
+                self.frame.push(
+                    (pixel_color * pixel_samples_scale)
+                        .to_gamma_2_color()
+                        .clamp(),
+                );
             }
         }
 
