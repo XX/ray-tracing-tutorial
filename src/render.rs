@@ -1,10 +1,6 @@
-use std::collections::HashMap;
-
 use crate::camera::Camera;
 use crate::object::Hittable;
-use crate::types::{
-    random_unit_vector_on_hemisphere, random_unit_vector_on_sphere, Color, Point3, Ray, Vector3,
-};
+use crate::types::{random_unit_vector_on_sphere, Color, Point3, Ray, Vector3};
 use crate::utils::Timer;
 
 pub struct Renderer {
@@ -156,7 +152,7 @@ impl Renderer {
             if bounds > self.max_depth {
                 break Color::BLACK;
             } else if let Some(hit) = world.hit(&ray, 0.001..f64::INFINITY) {
-                let direction = random_unit_vector_on_hemisphere(&hit.normal);
+                let direction = hit.normal + random_unit_vector_on_sphere();
                 ray = Ray::new(hit.point, direction);
                 fading *= 0.5;
                 bounds += 1;
