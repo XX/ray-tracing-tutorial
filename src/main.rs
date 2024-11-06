@@ -21,7 +21,9 @@ fn main() {
 
     let image_width = 800;
     let image_height = (image_width as f64 / ASPECT_RATIO) as usize;
-    let mut renderer = Renderer::new(image_width, image_height, 5);
+    let mut renderer = Renderer::new(image_width, image_height)
+        .with_samples_per_pixel(100)
+        .with_max_depth(50);
 
     let world: [Box<dyn Hittable>; 2] = [
         Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)),

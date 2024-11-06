@@ -1,30 +1,9 @@
-use derive_more::{Deref, DerefMut, From};
+pub use self::color::*;
+
+pub mod color;
 
 pub type Vector3 = nalgebra::Vector3<f64>;
 pub type Point3 = Vector3;
-
-#[derive(Copy, Clone, From, Deref, DerefMut, Debug, Default, PartialEq)]
-pub struct Color(pub Vector3);
-
-impl Color {
-    pub const BLACK: Color = Color::new(0.0, 0.0, 0.0);
-    pub const WHITE: Color = Color::new(1.0, 1.0, 1.0);
-
-    pub const fn new(r: f64, g: f64, b: f64) -> Self {
-        Self(Vector3::new(r, g, b))
-    }
-
-    pub fn to_byte(&self) -> [u8; 3] {
-        let (r, g, b) = (self.x, self.y, self.z);
-
-        // Translate the 0.0..=1.0 component values to the byte range 0..=255.
-        [(r * 256.0) as u8, (g * 256.0) as u8, (b * 256.0) as u8]
-    }
-
-    pub fn to_vec(&self) -> Vector3 {
-        self.0
-    }
-}
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct Ray {
@@ -42,5 +21,37 @@ impl Ray {
 
     pub fn at(&self, t: f64) -> Point3 {
         (self.origin + t * self.direction).into()
+    }
+}
+
+pub fn random_vector_in_cube() -> Vector3 {
+    2.0 * Vector3::new(
+        rand::random::<f64>(),
+        rand::random::<f64>(),
+        rand::random::<f64>(),
+    ) - Vector3::new(1.0, 1.0, 1.0)
+}
+
+pub fn random_vector_in_sphere() -> Vector3 {
+    loop {
+        let vector = random_vector_in_cube();
+        let lensq = vector.norm_squared();
+        if 1e-160 < lensq && lensq <= 1.0 {
+            return vector;
+        }
+    }
+}
+
+pub fn random_unit_vector_on_sphere() -> Vector3 {
+    random_vector_in_sphere().normalize()
+}
+
+pub fn random_unit_vector_on_hemisphere(normal: &Vector3) -> Vector3 {
+    let vector = random_unit_vector_on_sphere();
+    // In the same hemisphere as the normal
+    if vector.dot(normal) > 0.0 {
+        vector
+    } else {
+        -vector
     }
 }
