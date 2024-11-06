@@ -10,7 +10,6 @@ pub struct Renderer {
     frame: Vec<Color>,
     samples_per_pixel: usize,
     max_depth: usize,
-    cached_colors: Vec<(Ray, Color)>,
 }
 
 impl Renderer {
@@ -28,7 +27,6 @@ impl Renderer {
             frame: Vec::with_capacity(image_width * image_height),
             samples_per_pixel: 5,
             max_depth: 10,
-            cached_colors: Vec::new(),
         }
     }
 
@@ -42,29 +40,36 @@ impl Renderer {
         self
     }
 
-    pub fn render<T: Hittable + ?Sized>(&mut self, world: &T) -> Timer {
+    pub fn render<const FADING_N: usize, T: Hittable + ?Sized>(
+        &mut self,
+        world: &T,
+        fading: Fading<FADING_N>,
+    ) -> Timer {
         if !self.frame.is_empty() {
             self.frame = Vec::with_capacity(self.image_width * self.image_height);
         }
         let pixel_samples_scale = 1.0 / self.samples_per_pixel as f64;
-        self.cached_colors.clear();
 
         let mut timer = Timer::start();
 
         for j in 0..self.image_height {
             for i in 0..self.image_width {
                 let mut pixel_color = Color::BLACK;
+                let fading = match fading {
+                    Fading::Const(fading) => fading,
+                    Fading::Ramp(fadings) => fadings[i * fadings.len() / self.image_width],
+                };
 
                 if self.samples_per_pixel == 1 {
-                    pixel_color += self.ray_color(self.get_ray(i, j), world);
+                    pixel_color += self.ray_color(self.get_ray(i, j), world, fading);
                 } else if self.samples_per_pixel == 5 {
                     for ray in self.get_rays(i, j) {
-                        pixel_color += self.ray_color(ray, world);
+                        pixel_color += self.ray_color(ray, world, fading);
                     }
                 } else {
                     for _ in 0..self.samples_per_pixel {
                         let ray = self.get_random_ray(i, j);
-                        pixel_color += self.ray_color(ray, world);
+                        pixel_color += self.ray_color(ray, world, fading);
                     }
                 }
 
@@ -144,12 +149,17 @@ impl Renderer {
         ]
     }
 
-    fn ray_color<T: Hittable + ?Sized>(&self, ray: Ray, world: &T) -> Color {
-        self.ray_color_diffuse_random(ray, world)
+    fn ray_color<T: Hittable + ?Sized>(&self, ray: Ray, world: &T, fading: f64) -> Color {
+        self.ray_color_diffuse_random(ray, world, fading)
     }
 
-    fn ray_color_diffuse_random<T: Hittable + ?Sized>(&self, mut ray: Ray, world: &T) -> Color {
-        let mut fading = 1.0;
+    fn ray_color_diffuse_random<T: Hittable + ?Sized>(
+        &self,
+        mut ray: Ray,
+        world: &T,
+        fading: f64,
+    ) -> Color {
+        let mut acc_fading = 1.0;
         let mut bounds = 0;
 
         loop {
@@ -158,10 +168,10 @@ impl Renderer {
             } else if let Some(hit) = world.hit(&ray, 0.001..f64::INFINITY) {
                 let direction = hit.normal + random_unit_vector_on_sphere();
                 ray = Ray::new(hit.point, direction);
-                fading *= 0.5;
+                acc_fading *= fading;
                 bounds += 1;
             } else {
-                break fading * Color::gradient_white_to_blue(ray.direction.y);
+                break acc_fading * Color::gradient_white_to_blue(ray.direction.y);
             }
         }
     }
@@ -184,4 +194,9 @@ fn sample_square() -> Vector3 {
         rand::random::<f64>() - 0.5,
         0.0,
     )
+}
+
+pub enum Fading<const N: usize = 2> {
+    Const(f64),
+    Ramp([f64; N]),
 }

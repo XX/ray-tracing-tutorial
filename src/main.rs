@@ -1,6 +1,6 @@
 use std::io;
 
-use render::Renderer;
+use render::{Fading, Renderer};
 
 use crate::object::Hittable;
 use crate::sphere::Sphere;
@@ -32,7 +32,7 @@ fn main() {
 
     log.msg("Render frame ").flush();
 
-    let timer = renderer.render(world.as_slice());
+    let timer = renderer.render(world.as_slice(), Fading::<2>::Ramp([0.1, 0.5]));
     log.elapsed(&timer).ln();
 
     log.msg("Output image ").flush();
