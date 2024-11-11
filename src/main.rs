@@ -39,12 +39,12 @@ fn main() {
     let left = Sphere::new(
         Point3::new(-1.0, 0.0, -1.0),
         0.5,
-        Metal::new(Color::new(0.8, 0.8, 0.8)),
+        Metal::new(Color::new(0.8, 0.8, 0.8), 0.3),
     );
     let right = Sphere::new(
         Point3::new(1.0, 0.0, -1.0),
         0.5,
-        Metal::new(Color::new(0.8, 0.6, 0.2)),
+        Metal::new(Color::new(0.8, 0.6, 0.2), 1.0),
     );
 
     let world: [Box<dyn Hittable>; 4] = [
@@ -56,7 +56,7 @@ fn main() {
 
     log.msg("Render frame ").flush();
 
-    let timer = renderer.render(world.as_slice(), Fading::<2>::Const(0.5));
+    let timer = renderer.render(world.as_slice(), Fading::<2>::Const(0.8));
     log.elapsed(&timer).ln();
 
     log.msg("Output image ").flush();

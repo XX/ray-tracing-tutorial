@@ -37,21 +37,31 @@ impl Material for Lambertian {
 #[derive(Clone, Debug)]
 pub struct Metal {
     albedo: Color,
+    fuzz: f64,
 }
 
 impl Metal {
-    pub fn new(albedo: Color) -> Self {
-        Self { albedo }
+    pub fn new(albedo: Color, fuzz: f64) -> Self {
+        Self {
+            albedo,
+            fuzz: fuzz.clamp(0.0, 1.0),
+        }
     }
 }
 
 impl Material for Metal {
     fn scatter(&self, ray: &Ray, hit: &Hit) -> Option<(Ray, Color)> {
         let reflected = reflect(&ray.direction, &hit.normal);
-        let scattered = Ray::new(hit.point, reflected);
-        let attenuation = self.albedo;
+        let reflected = reflected.normalize() + self.fuzz * random_unit_vector_on_sphere();
 
-        Some((scattered, attenuation))
+        if reflected.dot(&hit.normal) > 0.0 {
+            let scattered = Ray::new(hit.point, reflected);
+            let attenuation = self.albedo;
+
+            Some((scattered, attenuation))
+        } else {
+            None
+        }
     }
 }
 
