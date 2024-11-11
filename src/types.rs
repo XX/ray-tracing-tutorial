@@ -55,3 +55,10 @@ pub fn random_unit_vector_on_hemisphere(normal: &Vector3) -> Vector3 {
         -vector
     }
 }
+
+/// Return true if the vector is close to zero in all dimensions.
+pub fn near_zero(vector: &Vector3) -> bool {
+    const SMALLEST: f64 = 1e-8;
+
+    (vector.x.abs() < SMALLEST) && (vector.y.abs() < SMALLEST) && (vector.z.abs() < SMALLEST)
+}

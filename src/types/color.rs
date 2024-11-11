@@ -1,23 +1,10 @@
-use derive_more::derive::{AddAssign, MulAssign};
-use derive_more::{Add, Deref, DerefMut, From, Mul, Sub};
+use derive_more::{Add, AddAssign, Deref, DerefMut, From, Mul, MulAssign, Sub};
 use nalgebra::ComplexField;
 
 use super::Vector3;
 
 #[derive(
-    Copy,
-    Clone,
-    From,
-    Deref,
-    DerefMut,
-    Debug,
-    Default,
-    PartialEq,
-    Add,
-    Sub,
-    Mul,
-    AddAssign,
-    MulAssign,
+    Copy, Clone, From, Deref, DerefMut, Debug, Default, PartialEq, Add, Sub, AddAssign, MulAssign,
 )]
 pub struct Color(pub Vector3);
 
@@ -67,6 +54,22 @@ impl Mul<Color> for f64 {
 
     fn mul(self, rhs: Color) -> Self::Output {
         Color(self * rhs.0)
+    }
+}
+
+impl Mul<Color> for Color {
+    type Output = Color;
+
+    fn mul(self, rhs: Color) -> Self::Output {
+        Self::new(self.0.x * rhs.0.x, self.0.y * rhs.0.y, self.0.z * rhs.0.z)
+    }
+}
+
+impl MulAssign<Color> for Color {
+    fn mul_assign(&mut self, rhs: Color) {
+        self.0.x *= rhs.0.x;
+        self.0.y *= rhs.0.y;
+        self.0.z *= rhs.0.z;
     }
 }
 

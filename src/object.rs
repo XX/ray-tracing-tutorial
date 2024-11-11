@@ -1,18 +1,26 @@
 use std::ops::{Deref, Range};
 
+use crate::material::Material;
 use crate::types::{Point3, Ray, Vector3};
 
 #[derive(Copy, Clone, Debug)]
-pub struct Hit {
+pub struct Hit<'a> {
     pub t: f64,
     pub point: Point3,
     pub normal: Vector3,
     pub front_face: bool,
+    pub material: &'a dyn Material,
 }
 
-impl Hit {
+impl<'a> Hit<'a> {
     /// NOTE: the parameter `outward_normal` is assumed to have unit length.
-    pub fn new(t: f64, point: Point3, ray: &Ray, outward_normal: Vector3) -> Self {
+    pub fn new(
+        t: f64,
+        point: Point3,
+        ray: &Ray,
+        outward_normal: Vector3,
+        material: &'a dyn Material,
+    ) -> Self {
         let front_face = ray.direction.dot(&outward_normal) < 0.0;
         let normal = if front_face {
             outward_normal
@@ -25,6 +33,7 @@ impl Hit {
             point,
             normal,
             front_face,
+            material,
         }
     }
 }

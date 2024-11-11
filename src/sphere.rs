@@ -1,23 +1,26 @@
 use std::ops::Range;
 
+use crate::material::Material;
 use crate::object::{Hit, Hittable};
 use crate::types::{Point3, Ray};
 
-pub struct Sphere {
+pub struct Sphere<M> {
     center: Point3,
     radius: f64,
+    material: M,
 }
 
-impl Sphere {
-    pub fn new(center: Point3, radius: f64) -> Self {
+impl<M: Material> Sphere<M> {
+    pub fn new(center: Point3, radius: f64, material: M) -> Self {
         Self {
             center,
             radius: radius.max(0.0),
+            material,
         }
     }
 }
 
-impl Hittable for Sphere {
+impl<M: Material> Hittable for Sphere<M> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         let oc = self.center - ray.origin;
         let a = ray.direction.norm_squared();
@@ -37,6 +40,7 @@ impl Hittable for Sphere {
                         point,
                         ray,
                         (point - self.center) / self.radius,
+                        &self.material,
                     ));
                 }
             }

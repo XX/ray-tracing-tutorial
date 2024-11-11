@@ -1,6 +1,6 @@
 use crate::camera::Camera;
 use crate::object::Hittable;
-use crate::types::{random_unit_vector_on_sphere, Color, Point3, Ray, Vector3};
+use crate::types::{Color, Point3, Ray, Vector3};
 use crate::utils::Timer;
 
 pub struct Renderer {
@@ -74,7 +74,7 @@ impl Renderer {
                 }
 
                 self.frame.push(
-                    (pixel_color * pixel_samples_scale)
+                    (pixel_samples_scale * pixel_color)
                         .to_gamma_2_color()
                         .clamp(),
                 );
@@ -159,6 +159,7 @@ impl Renderer {
         world: &T,
         fading: f64,
     ) -> Color {
+        let mut attenuation = Color::WHITE;
         let mut acc_fading = 1.0;
         let mut bounds = 0;
 
@@ -166,12 +167,16 @@ impl Renderer {
             if bounds > self.max_depth {
                 break Color::BLACK;
             } else if let Some(hit) = world.hit(&ray, 0.001..f64::INFINITY) {
-                let direction = hit.normal + random_unit_vector_on_sphere();
-                ray = Ray::new(hit.point, direction);
-                acc_fading *= fading;
-                bounds += 1;
+                if let Some((scattered, new_attenuation)) = hit.material.scatter(&ray, &hit) {
+                    ray = scattered;
+                    attenuation *= new_attenuation;
+                    acc_fading *= fading;
+                    bounds += 1;
+                } else {
+                    break Color::BLACK;
+                }
             } else {
-                break acc_fading * Color::gradient_white_to_blue(ray.direction.y);
+                break attenuation * (acc_fading * Color::gradient_white_to_blue(ray.direction.y));
             }
         }
     }

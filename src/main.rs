@@ -1,13 +1,14 @@
 use std::io;
 
-use render::{Fading, Renderer};
-
+use crate::material::{Lambertian, Metal};
 use crate::object::Hittable;
+use crate::render::{Fading, Renderer};
 use crate::sphere::Sphere;
-use crate::types::Point3;
+use crate::types::{Color, Point3};
 use crate::utils::Logger;
 
 mod camera;
+mod material;
 mod object;
 mod render;
 mod sphere;
@@ -25,14 +26,37 @@ fn main() {
         .with_samples_per_pixel(100)
         .with_max_depth(50);
 
-    let world: [Box<dyn Hittable>; 2] = [
-        Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)),
-        Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)),
+    let ground = Sphere::new(
+        Point3::new(0.0, -100.5, -1.0),
+        100.0,
+        Lambertian::new(Color::new(0.8, 0.8, 0.0)),
+    );
+    let central = Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5,
+        Lambertian::new(Color::new(0.1, 0.2, 0.5)),
+    );
+    let left = Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        Metal::new(Color::new(0.8, 0.8, 0.8)),
+    );
+    let right = Sphere::new(
+        Point3::new(1.0, 0.0, -1.0),
+        0.5,
+        Metal::new(Color::new(0.8, 0.6, 0.2)),
+    );
+
+    let world: [Box<dyn Hittable>; 4] = [
+        Box::new(ground),
+        Box::new(central),
+        Box::new(left),
+        Box::new(right),
     ];
 
     log.msg("Render frame ").flush();
 
-    let timer = renderer.render(world.as_slice(), Fading::<2>::Ramp([0.1, 0.5]));
+    let timer = renderer.render(world.as_slice(), Fading::<2>::Const(0.5));
     log.elapsed(&timer).ln();
 
     log.msg("Output image ").flush();
