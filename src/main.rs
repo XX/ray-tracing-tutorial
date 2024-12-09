@@ -34,7 +34,7 @@ fn main() {
         Lambertian::new(Color::new(0.8, 0.8, 0.0)),
     );
     let central = Sphere::new(
-        Point3::new(0.0, 0.0, -1.0),
+        Point3::new(0.0, 0.0, -1.2),
         0.5,
         Lambertian::new(Color::new(0.1, 0.2, 0.5)),
     );
@@ -60,7 +60,7 @@ fn main() {
 
     log.msg("Render frame ").flush();
 
-    let timer = renderer.render(world.as_slice(), Fading::<2>::Const(0.8));
+    let timer = renderer.render(world.as_slice(), Fading::<2>::Const(0.98));
     log.elapsed(&timer).ln();
 
     log.msg("Output image ").flush();
