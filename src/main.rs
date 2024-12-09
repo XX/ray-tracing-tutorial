@@ -1,5 +1,7 @@
 use std::io;
 
+use material::Dielectric;
+
 use crate::material::{Lambertian, Metal};
 use crate::object::Hittable;
 use crate::render::{Fading, Renderer};
@@ -36,11 +38,7 @@ fn main() {
         0.5,
         Lambertian::new(Color::new(0.1, 0.2, 0.5)),
     );
-    let left = Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        Metal::new(Color::new(0.8, 0.8, 0.8), 0.3),
-    );
+    let left = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, Dielectric::new(1.5));
     let right = Sphere::new(
         Point3::new(1.0, 0.0, -1.0),
         0.5,

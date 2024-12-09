@@ -1,5 +1,7 @@
 use std::fmt;
 
+use nalgebra::Normed;
+
 use crate::object::Hit;
 use crate::types::{near_zero, random_unit_vector_on_sphere, Color, Ray, Vector3};
 
@@ -65,6 +67,43 @@ impl Material for Metal {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct Dielectric {
+    // Refractive index in vacuum or air, or the ratio of the material's refractive index over
+    // the refractive index of the enclosing media
+    refraction_index: f64,
+}
+
+impl Dielectric {
+    pub fn new(refraction_index: f64) -> Self {
+        Self { refraction_index }
+    }
+}
+
+impl Material for Dielectric {
+    fn scatter(&self, ray: &Ray, hit: &Hit) -> Option<(Ray, Color)> {
+        let attenuation = Color::WHITE;
+        let refraction_ratio = if hit.front_face {
+            1.0 / self.refraction_index
+        } else {
+            self.refraction_index
+        };
+
+        let refracted = refract(&ray.direction.normalize(), &hit.normal, refraction_ratio);
+        let scattered = Ray::new(hit.point, refracted);
+
+        Some((scattered, attenuation))
+    }
+}
+
 pub fn reflect(vector: &Vector3, normal: &Vector3) -> Vector3 {
     vector - 2.0 * vector.dot(normal) * normal
+}
+
+pub fn refract(vector: &Vector3, normal: &Vector3, etai_over_etat: f64) -> Vector3 {
+    let cos_theta = (-vector).dot(normal).min(1.0);
+    let r_out_perp = etai_over_etat * (vector + cos_theta * normal);
+    let r_out_parallel = -(1.0 - r_out_perp.norm_squared()).abs().sqrt() * normal;
+
+    r_out_perp + r_out_parallel
 }
