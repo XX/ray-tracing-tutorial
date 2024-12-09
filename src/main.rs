@@ -38,10 +38,11 @@ fn main() {
         0.5,
         Lambertian::new(Color::new(0.1, 0.2, 0.5)),
     );
-    let left = Sphere::new(
+    let left = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, Dielectric::new(1.5));
+    let left_bubble = Sphere::new(
         Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        Dielectric::new(1.0 / 1.33),
+        0.4,
+        Dielectric::new(1.0 / 1.5),
     );
     let right = Sphere::new(
         Point3::new(1.0, 0.0, -1.0),
@@ -49,10 +50,11 @@ fn main() {
         Metal::new(Color::new(0.8, 0.6, 0.2), 1.0),
     );
 
-    let world: [Box<dyn Hittable>; 4] = [
+    let world: [Box<dyn Hittable>; 5] = [
         Box::new(ground),
         Box::new(central),
         Box::new(left),
+        Box::new(left_bubble),
         Box::new(right),
     ];
 
