@@ -38,7 +38,11 @@ fn main() {
         0.5,
         Lambertian::new(Color::new(0.1, 0.2, 0.5)),
     );
-    let left = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, Dielectric::new(1.5));
+    let left = Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        Dielectric::new(1.0 / 1.33),
+    );
     let right = Sphere::new(
         Point3::new(1.0, 0.0, -1.0),
         0.5,
