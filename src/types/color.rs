@@ -2,6 +2,7 @@ use std::ops;
 
 use derive_more::{Add, AddAssign, Deref, DerefMut, From, MulAssign, Sub};
 use nalgebra::ComplexField;
+use rand::distr::uniform::SampleRange;
 
 use super::Vector3;
 
@@ -21,6 +22,18 @@ impl Color {
 
     pub const fn new(r: f64, g: f64, b: f64) -> Self {
         Self(Vector3::new(r, g, b))
+    }
+
+    pub fn random_range(range: impl SampleRange<f64> + Clone) -> Self {
+        Self::new(
+            rand::random_range(range.clone()),
+            rand::random_range(range.clone()),
+            rand::random_range(range),
+        )
+    }
+
+    pub fn random() -> Self {
+        Self::random_range(0.0..=1.0)
     }
 
     pub fn to_byte(&self) -> [u8; 3] {
