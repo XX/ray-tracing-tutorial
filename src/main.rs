@@ -23,7 +23,7 @@ const ASPECT_RATIO: f64 = 16.0 / 9.0;
 fn main() {
     let mut log = Logger::new(io::stderr());
 
-    let image_width = 800;
+    let image_width = 1200;
     let image_height = (image_width as f64 / ASPECT_RATIO) as usize;
     let camera = final_scene_camera(image_width, image_height);
     let mut renderer = Renderer::new(camera, image_width, image_height)
