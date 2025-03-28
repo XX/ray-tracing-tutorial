@@ -14,11 +14,9 @@ pub struct Renderer {
 
 impl Renderer {
     pub fn new(image_width: usize, image_height: usize) -> Self {
-        let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), 1.0).with_viewport_size(
-            2.0,
-            image_width,
-            image_height,
-        );
+        let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), 1.0)
+            .with_viewport_size(image_width, image_height)
+            .with_vertical_fov(90.0);
 
         Self {
             image_width,

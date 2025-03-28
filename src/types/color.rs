@@ -1,4 +1,6 @@
-use derive_more::{Add, AddAssign, Deref, DerefMut, From, Mul, MulAssign, Sub};
+use std::ops;
+
+use derive_more::{Add, AddAssign, Deref, DerefMut, From, MulAssign, Sub};
 use nalgebra::ComplexField;
 
 use super::Vector3;
@@ -49,7 +51,7 @@ impl Color {
     }
 }
 
-impl Mul<Color> for f64 {
+impl ops::Mul<Color> for f64 {
     type Output = Color;
 
     fn mul(self, rhs: Color) -> Self::Output {
@@ -57,7 +59,7 @@ impl Mul<Color> for f64 {
     }
 }
 
-impl Mul<Color> for Color {
+impl ops::Mul<Color> for Color {
     type Output = Color;
 
     fn mul(self, rhs: Color) -> Self::Output {
@@ -65,7 +67,7 @@ impl Mul<Color> for Color {
     }
 }
 
-impl MulAssign<Color> for Color {
+impl ops::MulAssign<Color> for Color {
     fn mul_assign(&mut self, rhs: Color) {
         self.0.x *= rhs.0.x;
         self.0.y *= rhs.0.y;
@@ -73,7 +75,7 @@ impl MulAssign<Color> for Color {
     }
 }
 
-impl Add<Color> for Vector3 {
+impl ops::Add<Color> for Vector3 {
     type Output = Color;
 
     fn add(self, rhs: Color) -> Self::Output {

@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-derive_more = { version = "1.0", features = ["from", "display", "deref", "deref_mut", "mul", "mul_assign", "add", "add_assign"] }
+derive_more = { version = "2.0", features = ["from", "display", "deref", "deref_mut", "mul", "mul_assign", "add", "add_assign"] }
 nalgebra = "0.33"
-rand = "0.8"
+rand = "0.9"
