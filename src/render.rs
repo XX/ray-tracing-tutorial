@@ -15,6 +15,8 @@ pub struct Renderer {
 impl Renderer {
     pub fn new(image_width: usize, image_height: usize) -> Self {
         let camera = Camera::new(Point3::new(-2.0, 2.0, 1.0), Point3::new(0.0, 0.0, -1.0))
+            .with_defocus_angle(10.0)
+            .with_focus_dist(3.4)
             .with_vertical_fov(20.0)
             .with_viewport_size(image_width, image_height);
 
@@ -101,22 +103,19 @@ impl Renderer {
     /// Construct a camera ray originating from the origin and directed at randomly sampled
     /// point around the pixel location i, j.
     pub fn get_random_ray(&self, i: usize, j: usize) -> Ray {
-        let origin = self.camera.lookfrom();
-        let direction =
-            self.camera.pixel_center(i, j, Some(sample_square())) - self.camera.lookfrom();
+        let origin = self.camera.origin();
+        let direction = self.camera.pixel_center(i, j, Some(sample_square())) - origin;
 
         Ray::new(origin, direction)
     }
 
     pub fn get_ray(&self, i: usize, j: usize) -> Ray {
-        Ray::new(
-            self.camera.lookfrom(),
-            self.camera.pixel_center(i, j, None) - self.camera.lookfrom(),
-        )
+        let origin = self.camera.origin();
+        Ray::new(origin, self.camera.pixel_center(i, j, None) - origin)
     }
 
     pub fn get_rays(&self, i: usize, j: usize) -> [Ray; 5] {
-        let origin = self.camera.lookfrom();
+        let origin = self.camera.origin();
 
         [
             Ray::new(

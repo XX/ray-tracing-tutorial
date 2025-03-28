@@ -14,6 +14,18 @@ pub struct Pixel {
     pub delta_v: Vector3,
 }
 
+#[derive(Debug, Default)]
+pub struct Defocus {
+    // Variation angle of rays through each pixel
+    pub angle: f64,
+
+    // Defocus disk horizontal radius
+    pub disk_u: Vector3,
+
+    // Defocus disk vertical radius
+    pub disk_v: Vector3,
+}
+
 #[derive(Debug)]
 pub struct Camera {
     viewport: Viewport,
@@ -33,6 +45,11 @@ pub struct Camera {
     viewup: Vector3,
 
     basis: Basis,
+
+    defocus: Defocus,
+
+    // Distance from camera lookfrom point to plane of perfect focus
+    focus_dist: f64,
 }
 
 impl Default for Camera {
@@ -46,6 +63,8 @@ impl Default for Camera {
             lookat: Point3::new(0.0, 0.0, -1.0),
             viewup: Vector3::new(0.0, 1.0, 0.0),
             basis: Basis::default(),
+            defocus: Defocus::default(),
+            focus_dist: 10.0,
         }
     }
 }
@@ -75,12 +94,22 @@ impl Camera {
         self
     }
 
+    pub fn with_focus_dist(mut self, focus_dist: f64) -> Self {
+        self.focus_dist = focus_dist;
+        self
+    }
+
+    pub fn with_defocus_angle(mut self, angle: f64) -> Self {
+        self.defocus.angle = angle;
+        self
+    }
+
     pub fn with_viewport_size(mut self, image_width: usize, image_height: usize) -> Self {
         // Calculate the actual aspect ratio.
         let aspect_ration = image_width as f64 / image_height as f64;
         let theta = self.vertical_fov.to_radians();
         let half_height = (theta / 2.0).tan();
-        let viewport_height = 2.0 * half_height * self.focal_length();
+        let viewport_height = 2.0 * half_height * self.focus_dist;
         self.viewport.height = viewport_height;
         self.viewport.width = viewport_height * aspect_ration;
 
@@ -100,6 +129,11 @@ impl Camera {
         // Calculate the location of the upper left pixel.
         self.upper_left_pixel = self.calc_upper_left_pixel_loc();
 
+        // Calculate the camera defocus disk basis vectors.
+        let defocus_radius = self.focus_dist * (self.defocus.angle / 2.0).to_radians().tan();
+        self.defocus.disk_u = self.basis.u * defocus_radius;
+        self.defocus.disk_v = self.basis.v * defocus_radius;
+
         self
     }
 
@@ -114,15 +148,38 @@ impl Camera {
         self.lookfrom
     }
 
-    pub fn focal_length(&self) -> f64 {
-        (self.lookfrom - self.lookat).magnitude()
+    pub fn origin(&self) -> Point3 {
+        if self.defocus.angle > 0.0 {
+            self.defocus_disk_sample()
+        } else {
+            self.lookfrom()
+        }
+    }
+
+    fn defocus_disk_sample(&self) -> Vector3 {
+        // Returns a random point in the camera defocus disk.
+        let p = random_in_unit_disk();
+        self.lookfrom + (p[0] * self.defocus.disk_u) + (p[1] * self.defocus.disk_v)
     }
 
     fn calc_upper_left_pixel_loc(&self) -> Point3 {
         let viewport_upper_left = self.lookfrom
-            - (self.focal_length() * self.basis.w)
+            - (self.focus_dist * self.basis.w)
             - self.viewport.u / 2.0
             - self.viewport.v / 2.0;
         viewport_upper_left + (self.pixel.delta_u + self.pixel.delta_v) / 2.0
+    }
+}
+
+fn random_in_unit_disk() -> Vector3 {
+    loop {
+        let p = Vector3::new(
+            rand::random_range(-1.0..1.0),
+            rand::random_range(-1.0..1.0),
+            0.0,
+        );
+        if p.magnitude_squared() < 1.0 {
+            return p;
+        }
     }
 }
